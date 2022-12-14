@@ -1,0 +1,27 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © DiogoPereira56
+
+//@version=5
+strategy("RSI Semanal", overlay = true, initial_capital = 5000, default_qty_value = 100, process_orders_on_close=true, calc_on_every_tick=true)
+
+timePeriod = time >= timestamp(syminfo.timezone, 2015, 01, 01, 0, 0)
+
+rsiDays = input.int(title="Rsi Days", defval=14)
+crossValue = input.int(title="Value to Cross", defval=40)
+exitValue = input.int(title="Value to exit", defval=60)
+
+
+// Calculate RSI
+rsiValue = ta.rsi(close, rsiDays)
+
+// Determine trading condition
+rsiCross = ta.crossover(rsiValue, crossValue)
+exitCondition = ta.crossover(rsiValue, exitValue)
+
+// Go long based on RSI cross
+if rsiCross and timePeriod
+    strategy.entry("long", strategy.long)
+
+// Exists after a certain value is crossed
+if exitCondition
+    strategy.close(id="long")

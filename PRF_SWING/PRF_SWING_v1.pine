@@ -1,0 +1,35 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © DiogoPereira56
+
+//@version=5
+strategy("PRF_SWING", overlay = true, initial_capital = 5000, default_qty_value = 100)
+
+movingAverage = ta.sma(close, 8)
+movingAverage2 = ta.sma(close, 80)
+timePeriod = time >= timestamp(syminfo.timezone, 2021, 12, 15, 0, 0)
+
+//1 candle com máxima acima das máximas dos 2 últimos candles
+isAboveLast2Candles = high > high[1] and high > high[2]
+//2 Candle negativo
+strategyPosition = strategy.position_size 
+isShort = strategyPosition[1] < 0
+//3 preço quebrar minima+1 centimo
+notGap = low < low[1] and high > low[1]
+//preço para entrar
+priceToEnter = close < low[1]
+//SL - aqui é apenas inicializado
+var float stopLoss = 0
+// SG - apenas inicializado
+var float stopGain = 0
+
+//if everything is guchi = give me money
+if  isAboveLast2Candles and timePeriod //and notGap and priceToEnter and isShort
+    strategy.entry(id="short", direction = strategy.short, limit=low[1]-0.01)
+    //SL - 1 tick acima da maxima do candle ou aseguir (o que for maior)
+    stopLoss := high > high[1] ?  high + 0.01 : high[2] + 0.01
+    stopGain := stopLoss - close //ainda nao acabei o stopGain
+
+strategy.close(id="short")
+
+plot(movingAverage)
+plot(movingAverage2)
