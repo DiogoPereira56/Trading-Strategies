@@ -1,0 +1,13 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © DiogoPereira56
+
+//@version=5
+indicator("31 Days")
+
+daysBefore = input.int(title="Days", defval=31)
+
+longPlot = close > close[daysBefore] ? 1 : 0
+shortPlot = close < close[daysBefore] ? 1 : 0
+
+plot(longPlot, color=color.green)
+//plot(shortPlot, color=color.red)
